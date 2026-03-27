@@ -8,7 +8,9 @@ class MessageGenerator:
         self.body_template = body_template
 
     def generate(self, df) -> Tuple[Optional[List[Dict]], Optional[str]]:
-        used_tags = self._extract_used_tags()
+        used_tags, invalid = self._extract_used_tags()
+        if invalid:
+            return None, f"В шаблоне используются недопустимые метки: {', '.join(invalid)}"
         tag_to_column = {
             "*имя*": "имя",
             "*дата*": "дата",
@@ -52,11 +54,12 @@ class MessageGenerator:
             })
         return emails, None
 
-    def _extract_used_tags(self) -> set:
+    def _extract_used_tags(self) -> tuple[set, list]:
         pattern = r"\*[а-яё]+\*"
-        tags = set(re.findall(pattern, self.subject_template + self.body_template))
+        found = set(re.findall(pattern, self.subject_template + self.body_template))
         allowed = {"*имя*", "*дата*", "*время*", "*место*", "*задание*"}
-        return tags.intersection(allowed)
+        invalid = found - allowed
+        return allowed.intersection(found), invalid
 
     def _process_gender_alternatives(self, text: str, gender: str) -> str:
         def repl(match):
