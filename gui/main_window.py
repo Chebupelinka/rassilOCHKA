@@ -196,5 +196,5 @@ class MainWindow(QMainWindow):
         self.send_thread = SendThread(self.sender, self.generated_emails, delay_min, delay_max)
         self.send_thread.status_update.connect(self.status_dialog.add_status)
         self.send_thread.progress_update.connect(self.status_dialog.update_progress)
-        self.send_thread.finished.connect(self.status_dialog.finished)
+        self.send_thread.finished.connect(lambda: self.status_dialog.finished())
         self.send_thread.start()

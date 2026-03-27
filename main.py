@@ -6,7 +6,7 @@ from gui.main_window import MainWindow
 def main():
     app = QApplication(sys.argv)
     auth = AuthDialog()
-    if auth.exec_() == AuthDialog.Accepted and auth.accepted_flag:
+    if auth.exec() == AuthDialog.Accepted and auth.accepted_flag:
         window = MainWindow()
         window.show()
         sys.exit(app.exec())
