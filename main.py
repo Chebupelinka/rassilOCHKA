@@ -1,4 +1,5 @@
 import sys
+import os
 from PySide6.QtWidgets import QApplication
 from gui.auth_dialog import AuthDialog
 from gui.main_window import MainWindow
@@ -7,7 +8,7 @@ def main():
     app = QApplication(sys.argv)
     auth = AuthDialog()
     if auth.exec() == AuthDialog.Accepted and auth.accepted_flag:
-        window = MainWindow()
+        window = MainWindow(auth.config_data)
         window.show()
         sys.exit(app.exec())
     else:

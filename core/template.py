@@ -1,6 +1,5 @@
 import re
-from typing import List, Dict, Tuple, Optional
-
+from typing import List, Dict, Tuple, Optional, Set
 
 class MessageGenerator:
     def __init__(self, subject_template: str, body_template: str):
@@ -11,6 +10,7 @@ class MessageGenerator:
         used_tags, invalid = self._extract_used_tags()
         if invalid:
             return None, f"В шаблоне используются недопустимые метки: {', '.join(invalid)}"
+
         tag_to_column = {
             "*имя*": "имя",
             "*дата*": "дата",
@@ -33,7 +33,7 @@ class MessageGenerator:
             for tag in used_tags:
                 col = tag_to_column[tag]
                 if not row[col]:
-                    error_rows.append((idx + 2, tag, row.get("почта", "неизвестно")))
+                    error_rows.append((idx+2, tag, row.get("почта", "неизвестно")))
         if error_rows:
             msg = "В следующих строках отсутствуют данные для меток:\n"
             for row_num, tag, email in error_rows:
@@ -54,7 +54,7 @@ class MessageGenerator:
             })
         return emails, None
 
-    def _extract_used_tags(self) -> tuple[set, list]:
+    def _extract_used_tags(self) -> Tuple[Set[str], Set[str]]:
         pattern = r"\*[а-яё]+\*"
         found = set(re.findall(pattern, self.subject_template + self.body_template))
         allowed = {"*имя*", "*дата*", "*время*", "*место*", "*задание*"}
@@ -69,7 +69,6 @@ class MessageGenerator:
             if g in ("ж", "жен", "женский"):
                 return alt
             return base
-
         pattern = r"([а-яё-]+)\(([а-яё-]+)\)"
         return re.sub(pattern, repl, text, flags=re.IGNORECASE)
 

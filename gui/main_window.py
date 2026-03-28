@@ -2,7 +2,7 @@ import os
 from PySide6.QtWidgets import (QMainWindow, QTabWidget, QWidget, QVBoxLayout,
                                QPushButton, QFileDialog, QMessageBox, QLabel,
                                QTextEdit, QLineEdit, QListWidget, QListWidgetItem,
-                               QFormLayout, QGroupBox, QPlainTextEdit, QInputDialog,
+                               QFormLayout, QGroupBox, QPlainTextEdit,
                                QDoubleSpinBox)
 from PySide6.QtCore import QThread, Signal
 
@@ -10,8 +10,6 @@ from core.excel_parser import ExcelParser
 from core.template import MessageGenerator
 from core.sender import EmailSender
 from gui.status_dialog import StatusDialog
-import os
-from dotenv import load_dotenv
 
 class SendThread(QThread):
     status_update = Signal(str, bool, str)
@@ -32,8 +30,9 @@ class SendThread(QThread):
         self.sender.send_batch(self.emails, self.delay_min, self.delay_max, status_cb, progress_cb)
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, config_data):
         super().__init__()
+        self.config_data = config_data
         self.setWindowTitle("Рассылка писем")
         self.resize(900, 700)
 
@@ -44,17 +43,14 @@ class MainWindow(QMainWindow):
         self.tabs = QTabWidget()
         self.setCentralWidget(self.tabs)
 
-        # Вкладка Excel
         self.excel_tab = QWidget()
         self.setup_excel_tab()
         self.tabs.addTab(self.excel_tab, "Добавление Excel таблички")
 
-        # Вкладка шаблона
         self.template_tab = QWidget()
         self.setup_template_tab()
         self.tabs.addTab(self.template_tab, "Шаблон сообщения")
 
-        # Вкладка заготовок
         self.drafts_tab = QWidget()
         self.setup_drafts_tab()
         self.tabs.addTab(self.drafts_tab, "Заготовки")
@@ -181,46 +177,8 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Нет писем", "Сначала сгенерируйте письма.")
             return
 
-        load_dotenv()
-        saved_sender = os.getenv("GMAIL_SENDER")
-        saved_password = os.getenv("GMAIL_APP_PASSWORD")
-
-        if saved_sender and saved_password:
-            reply = QMessageBox.question(self, "Сохранённые данные отправителя",
-                                         f"Найдены данные: {saved_sender}\nИспользовать их?",
-                                         QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-            if reply == QMessageBox.Yes:
-                sender_email = saved_sender
-                app_password = saved_password
-            elif reply == QMessageBox.No:
-                # Запросить новые данные
-                sender_email, ok1 = QInputDialog.getText(self, "Отправитель", "Введите ваш Gmail адрес:")
-                if not ok1 or not sender_email:
-                    return
-                app_password, ok2 = QInputDialog.getText(self, "Пароль приложения", "Введите пароль приложения Gmail:",
-                                                         QLineEdit.Password)
-                if not ok2 or not app_password:
-                    return
-                # Спросить, сохранить ли
-                save_reply = QMessageBox.question(self, "Сохранить данные",
-                                                  "Сохранить эти данные для следующих запусков? (Пароль будет в открытом виде в .env файле!)",
-                                                  QMessageBox.Yes | QMessageBox.No)
-                if save_reply == QMessageBox.Yes:
-                    with open(".env", "w") as f:
-                        f.write(f"GMAIL_SENDER={sender_email}\n")
-                        f.write(f"GMAIL_APP_PASSWORD={app_password}\n")
-                    QMessageBox.information(self, "Сохранено", "Данные сохранены в .env файл.")
-            else:
-                return
-        else:
-            # Нет сохранённых данных — запросить как раньше
-            sender_email, ok1 = QInputDialog.getText(self, "Отправитель", "Введите ваш Gmail адрес:")
-            if not ok1 or not sender_email:
-                return
-            app_password, ok2 = QInputDialog.getText(self, "Пароль приложения", "Введите пароль приложения Gmail:",
-                                                     QLineEdit.Password)
-            if not ok2 or not app_password:
-                return
+        sender_email = self.config_data["sender"]
+        app_password = self.config_data["app_password"]
 
         self.sender = EmailSender(sender_email, app_password)
         delay_min = self.delay_min.value()
