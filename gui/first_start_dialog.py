@@ -25,7 +25,7 @@ class FirstStartDialog(QDialog):
         self.master_password_confirm.setEchoMode(QLineEdit.Password)
         self.master_password_confirm.setPlaceholderText("повторите пароль")
 
-        form.addRow("Ваш Gmail адрес:", self.sender_email)
+        form.addRow("Ваш mail адрес:", self.sender_email)
         form.addRow("Пароль приложения Gmail:", self.app_password)
         form.addRow("Мастер-пароль:", self.master_password)
         form.addRow("Подтверждение мастер-пароля:", self.master_password_confirm)
