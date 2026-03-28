@@ -11,11 +11,13 @@ class AuthDialog(QDialog):
         self.config_data = None
 
         if not ConfigManager.is_configured():
-            # Первый запуск
             self.first_dialog = FirstStartDialog()
             if self.first_dialog.exec() == QDialog.Accepted and self.first_dialog.config_data:
                 self.config_data = self.first_dialog.config_data
                 self.accepted_flag = True
+                # Принудительно обрабатываем события, чтобы диалог успел закрыться
+                from PySide6.QtWidgets import QApplication
+                QApplication.processEvents()
                 self.accept()
             else:
                 self.reject()

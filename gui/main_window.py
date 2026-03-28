@@ -90,19 +90,67 @@ class MainWindow(QMainWindow):
 
     def setup_template_tab(self):
         layout = QVBoxLayout()
+
+        # Тема
         layout.addWidget(QLabel("Тема письма:"))
         self.subject_edit = QLineEdit()
         layout.addWidget(self.subject_edit)
 
+        # Тело письма
         layout.addWidget(QLabel("Текст письма (метки: *имя*, *дата*, *время*, *место*, *задание*):"))
         self.body_edit = QTextEdit()
         layout.addWidget(self.body_edit)
 
+        # Кнопки
+        btn_layout = QVBoxLayout()
         self.generate_btn = QPushButton("Сгенерировать письма")
         self.generate_btn.clicked.connect(self.generate_emails)
-        layout.addWidget(self.generate_btn)
+        btn_layout.addWidget(self.generate_btn)
 
+        self.example_btn = QPushButton("Пример шаблона")
+        self.example_btn.clicked.connect(self.fill_example_template)
+        btn_layout.addWidget(self.example_btn)
+
+        self.help_btn = QPushButton("?")
+        self.help_btn.setFixedWidth(30)
+        self.help_btn.clicked.connect(self.show_help)
+        btn_layout.addWidget(self.help_btn)
+
+        layout.addLayout(btn_layout)
         self.template_tab.setLayout(layout)
+
+    def fill_example_template(self):
+        """Заполняет поля примерами"""
+        self.subject_edit.setText("Приглашение для *имя*")
+        example_body = (
+            "Здравствуйте, *имя*!\n\n"
+            "Напоминаем, что ваше мероприятие состоится *дата* в *время* по адресу *место*.\n"
+            "Ваше задание: *задание*.\n\n"
+            "С уважением,\nОргкомитет"
+        )
+        self.body_edit.setPlainText(example_body)
+
+    def show_help(self):
+        """Показывает окно с инструкцией"""
+        help_text = (
+            "**Инструкция по составлению шаблона**\n\n"
+            "**Допустимые метки:**\n"
+            "• *имя* – подставляется из столбца «имя»\n"
+            "• *дата* – из столбца «дата»\n"
+            "• *время* – из столбца «время»\n"
+            "• *место* – из столбца «место»\n"
+            "• *задание* – из столбца «задание»\n\n"
+            "**Альтернативы по полу:**\n"
+            "Если в тексте встретится конструкция `слово1(слово2)`, то программа выберет:\n"
+            "• слово1 – если в столбце «пол» указано «м», «муж» или поле пусто\n"
+            "• слово2 – если указано «ж», «жен» или «женский»\n"
+            "Пример: `Дорогой(ая) *имя*!`\n\n"
+            "**Примечания:**\n"
+            "• Метки пишутся строго в звёздочках: *имя*\n"
+            "• Использование других меток вызовет ошибку.\n"
+            "• Все поля в Excel должны быть текстовыми (даты и время вводите как строки)."
+        )
+        QMessageBox.information(self, "Помощь", help_text)
 
     def generate_emails(self):
         if self.excel_df is None:
