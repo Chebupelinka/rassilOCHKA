@@ -14,7 +14,7 @@ class FirstStartDialog(QDialog):
 
         form = QFormLayout()
         self.sender_email = QLineEdit()
-        self.sender_email.setPlaceholderText("ваша_почта@gmail.com")
+        self.sender_email.setPlaceholderText("ваша_почта@yandex.ru")
         self.app_password = QLineEdit()
         self.app_password.setPlaceholderText("16-символьный пароль приложения")
         self.app_password.setEchoMode(QLineEdit.Password)
@@ -25,8 +25,8 @@ class FirstStartDialog(QDialog):
         self.master_password_confirm.setEchoMode(QLineEdit.Password)
         self.master_password_confirm.setPlaceholderText("повторите пароль")
 
-        form.addRow("Ваш mail адрес:", self.sender_email)
-        form.addRow("Пароль приложения Gmail:", self.app_password)
+        form.addRow("Ваш адрес Яндекс.Почты:", self.sender_email)
+        form.addRow("Пароль приложения:", self.app_password)
         form.addRow("Мастер-пароль:", self.master_password)
         form.addRow("Подтверждение мастер-пароля:", self.master_password_confirm)
         layout.addLayout(form)
