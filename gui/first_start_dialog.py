@@ -31,7 +31,7 @@ class FirstStartDialog(QDialog):
         form.addRow("Подтверждение мастер-пароля:", self.master_password_confirm)
         layout.addLayout(form)
 
-        self.save_btn = QPushButton("Сохранить и продолжить")
+        self.save_btn = QPushButton("Сохранить и продолжить (перезапустите приложение)")
         self.save_btn.clicked.connect(self.save_config)
         layout.addWidget(self.save_btn)
 

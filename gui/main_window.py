@@ -1,9 +1,11 @@
 import os
+
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import (QMainWindow, QTabWidget, QWidget, QVBoxLayout,
                                QPushButton, QFileDialog, QMessageBox, QLabel,
                                QTextEdit, QLineEdit, QListWidget, QListWidgetItem,
                                QFormLayout, QGroupBox, QPlainTextEdit,
-                               QDoubleSpinBox)
+                               QDoubleSpinBox, QHBoxLayout)
 from PySide6.QtCore import QThread, Signal
 
 from core.excel_parser import ExcelParser
@@ -111,7 +113,13 @@ class MainWindow(QMainWindow):
         self.example_btn.clicked.connect(self.fill_example_template)
         btn_layout.addWidget(self.example_btn)
 
+        hbox_help = QHBoxLayout()
         self.help_btn = QPushButton("?")
+        self.help_btn.setFixedWidth(30)
+        hbox_help.addWidget(self.help_btn)
+        hbox_help.setAlignment(Qt.AlignCenter)  # выравнивание по центру горизонтали
+        layout.addLayout(hbox_help)
+
         self.help_btn.setFixedWidth(30)
         self.help_btn.clicked.connect(self.show_help)
         btn_layout.addWidget(self.help_btn)
