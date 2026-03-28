@@ -6,7 +6,7 @@ from email.mime.multipart import MIMEMultipart
 from typing import List, Dict, Callable, Optional
 
 class EmailSender:
-    def __init__(self, sender_email: str, app_password: str, smtp_server="smtp.yandex.com", smtp_port=465):
+    def __init__(self, sender_email: str, app_password: str, smtp_server="smtp.gmail.com", smtp_port=465):
         self.sender = sender_email
         self.password = app_password
         self.server = smtp_server
@@ -20,17 +20,9 @@ class EmailSender:
         msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
         try:
-            if self.port == 465:
-                # SSL соединение (рекомендуется для Yandex)
-                with smtplib.SMTP_SSL(self.server, self.port) as server:
-                    server.login(self.sender, self.password)
-                    server.send_message(msg)
-            else:
-                # STARTTLS (порт 587)
-                with smtplib.SMTP(self.server, self.port) as server:
-                    server.starttls()
-                    server.login(self.sender, self.password)
-                    server.send_message(msg)
+            with smtplib.SMTP_SSL(self.server, self.port) as server:
+                server.login(self.sender, self.password)
+                server.send_message(msg)
             if status_callback:
                 status_callback(to, True, "Успешно отправлено")
             return True
